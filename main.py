@@ -1,3 +1,278 @@
+import hashlib
+import numpy 
+
+TAMANO_BLOQUE = 8
+RONDAS = 1
+#K = [0,0,1,0]
+
+mensaje = "Mil y una historia me he inventado \nPara estar aquí, aquí a tu lado\nY no te das cuenta que\nYo no encuentro ya qué hacer"\
+        "\nSé que piensas que no he sido sincero\nSé que piensas que ya no tengo remedio\n¿Pero quién me iba a decir que sin ti no sé vivir?"\
+        "\nY ahora que no estás aquí\nMe doy cuenta cuánta falta me haces\nSi te he fallado, te pido perdón\nDe la única forma que sé"\
+        "\nAbriendo las puertas de mi corazón\nPara cuando decidas volver\n"
+
+# Funcion que permite convertir una lista de bits a un String
+# Entrada:  bits      -> Lista de bits a convertir
+# 
+# Salida:   resultado -> String convertido
+def bitsAString(bits):
+    chars = []
+    for b in range(int(len(bits) / 8)):
+        byte = bits[b*8:(b+1)*8]
+        chars.append(chr(int(''.join([str(bit) for bit in byte]), 2)))
+    return ''.join(chars)
+
+
+# Funcion que permite convertir un string a una lista de Bits
+# Entrada:  s         -> String a convertir
+# 
+# Salida:   resultado -> Lista de bits que representan el string
+def stringABits(s):
+    resultado = []
+    for c in s:
+        bits = bin(ord(c))[2:]
+        bits = '00000000'[len(bits):] + bits
+        resultado.extend([int(b) for b in bits])
+    
+    return resultado
+
+
+def generarSubLlave(K, numeroRonda):
+    pass
+
+# Funcion que implementa un cifrador Fesitel
+# Entrada:  textoPanoBinario -> Lista de bits que representan el texto a cifrar
+#           F                -> Función F de prueba que se utiliza en el algoritmo de cifrado
+#           K1               -> Llave de prueba para la ronda 1 del algoritmo
+# 
+# Salida:   binarioCifrado   -> Lista de bits que representan el texto cifrado 
+def cifradorFeistel(textoPlanoBinario, F, K):
+    LE0 = textoPlanoBinario[0:int(TAMANO_BLOQUE/2)]
+    RE0 = textoPlanoBinario[int(TAMANO_BLOQUE/2): ]
+
+    for ronda in range(0, RONDAS):
+        subK = generarSubLlave(K, ronda)
+        resultadoF = F(RE0, subK)
+        RE1 = XOR(LE0, resultadoF)
+
+        # Se forma el bloque para la siguiente iteración
+        LE0 = RE0
+        RE0 = RE1
+
+    # luego de las rondas se invierten los bloques
+    binarioCifrado = RE0 + LE0
+
+    return binarioCifrado
+
+
+# Funcion que implementa una compuerta lógica XOR u OR-exclusivo
+# Entrada:  bloque1   -> Lista de bits que representan el primer bloque
+#           bloque2   -> Lista de bits que representan el segundo bloque
+# 
+# Salida:   resultado -> Lista de bits que representan el resultado de la compuerta XOR
+def XOR(bloque1, bloque2):
+    resultado = []
+    for b1,b2 in zip(bloque1, bloque2):
+        if(b1 == b2):
+            resultado.append(0)
+        elif((b1 == 0 and b2 == 1) or (b1 == 1 and b2 == 0)):
+            resultado.append(1)
+    
+    return resultado
+
+
+# Funcion que implementa la función F de prueba para ser utilizada en el algoritmo de cifrado Feistel
+# esta función coloca un bit de la llave si la posicion es par o un bit del bloque si es impar
+# Entrada:  bloque    -> Lista de bits que representan el bloque
+#           llave     -> Lista de bits que representan la llave
+# 
+# Salida:   resultado -> Lista de bits que representan el resultado de la función F
+def F(bloque, llave):
+    resultado = []
+    for i in range(0, len(llave)):
+        if(i%2 == 0):
+            resultado.append(llave[i])
+        else:
+            resultado.append(bloque[i])
+    
+    return resultado
+
+def cifrarTexto(K):
+    mensajeBits = stringABits(mensaje)
+    cantidadBloques = int(len(mensajeBits)/TAMANO_BLOQUE)
+
+    print("Texto Original: "+mensaje)
+    print("Bits Texto Original: "+str(mensajeBits))
+    print("\n\n")
+
+    ######################################################
+    # Cifrar
+    #########
+    print("Cifrando Texto ...")
+    i = 0
+    bitsCifrados = []
+    for numeroBloque in range(0, int(cantidadBloques)):
+        
+        bloque = mensajeBits[i:(TAMANO_BLOQUE)+i]
+        bloqueCifrado = cifradorFeistel(bloque, F, K)
+        bitsCifrados += bloqueCifrado
+        i += (TAMANO_BLOQUE)
+    
+    textoCifrado = bitsAString(bitsCifrados)
+    print("Texto Cifrado: "+textoCifrado)
+    print("Bits Texto Cifrado: "+ str(bitsCifrados))
+    print("\n\n")
+    
+    return textoCifrado
+
+
+def descifrarTexto(textoCifrado):
+    bitsCifrados = stringABits(textoCifrado)
+    cantidadBloques = int(len(bitsCifrados)/TAMANO_BLOQUE)
+
+    print("Descifrando Texto ...")
+    i = 0
+    bitsDescifrados = []
+    for numeroBloque in range(0, int(cantidadBloques)):
+        bloque = bitsCifrados[i: (TAMANO_BLOQUE)+i]
+        bloqueDescifrado = cifradorFeistel(bloque, F, K)
+        bitsDescifrados += bloqueDescifrado
+        i += (TAMANO_BLOQUE)
+    
+    textoDescifrado = bitsAString(bitsDescifrados)
+    print("Texto Descifrado: "+textoDescifrado)
+    print("Bits Texto Descifrado: "+ str(bitsDescifrados))
+
+    return textoDescifrado
+
+def generarLlave(tamañoLLave):
+    return numpy.random.randint(2, size=tamañoLLave)
+
+if __name__ == "__main__":
+    h = hashlib.md5()
+    h.update("lorem".encode('UTF-8'))
+    print (h.hexdigest())
+    scale = 16 ## equals to hexadecimal
+    num_of_bits = 8
+    print(list(bin(int(h.hexdigest(), scale))[2:].zfill(num_of_bits)))
+
+    K = generarLlave(int(TAMANO_BLOQUE))
+    #textoCifrado = cifrarTexto(K)
+    #textoDescifrado = descifrarTexto(textoCifrado)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
 import re
 from unicodedata import normalize
 import sys 
@@ -164,9 +439,30 @@ def preprocesameientoDeTexto(texto):
     return texto
 
 
+def avalancheTest(message1,message2,key):
+    m1 = message1
+    bitsm1 = ' '.join(format(x, 'b') for x in bytearray(m1, 'utf-8'))
+    m2 = message2
+    bitsm2 = ' '.join(format(x, 'b') for x in bytearray(m2, 'utf-8'))
+    #For the first message, example: "hola"
+    textoProcesado1 = preprocesameientoDeTexto(m1)
+    textoEncriptado1 = encriptar(llaveSecreta, textoProcesado1)
+    out1 = ' '.join(format(x, 'b') for x in bytearray(textoEncriptado1, 'utf-8'))
+    print("La palabra "+m1+" encriptada con llave "+str(key)+" tiene como resultado "+textoEncriptado1+", cuyos bits son: "+str(out1))
+    #For the second message, example: "hole"
+    textoProcesado2 = preprocesameientoDeTexto(m2)
+    textoEncriptado2 = encriptar(llaveSecreta, textoProcesado2)
+    out2 = ' '.join(format(x, 'b') for x in bytearray(textoEncriptado2, 'utf-8'))
+    print("La palabra "+m2+" encriptada con llave "+str(key)+" tiene como resultado "+textoEncriptado2+", cuyos bits son: "+str(out2))
+
 if __name__ == "__main__":
     llaveSecreta = [4,3,1,2,5,6,7,8]
-    texto =  'hi hitler salve hitler'
-    textoProcesado = preprocesameientoDeTexto(texto)
-    textoEncriptado = encriptar(llaveSecreta, textoProcesado)
-    textoDesencriptado = desencriptar(llaveSecreta, textoEncriptado)
+    texto1 =  'hola como estas'
+    texto2 =  'hole como estas'
+    avalancheTest(texto1, texto2, llaveSecreta)
+
+    #textoProcesado = preprocesameientoDeTexto(texto)
+    #textoEncriptado = encriptar(llaveSecreta, textoProcesado)
+    #textoDesencriptado = desencriptar(llaveSecreta, textoEncriptado)
+
+"""
