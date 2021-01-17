@@ -1,54 +1,12 @@
 import hashlib
 import numpy 
+import time
+import matplotlib.pyplot as plt
 
-TAMANO_BLOQUE = 4
-RONDAS = 8
+TAMANO_BLOQUE = 8
+RONDAS = 7
 subkey = []
-#mensaje = "hola a todos"
 
-mensaje = "Mil y una historia me he inventado \nPara estar aquí, aquí a tu lado\nY no te das cuenta que\nYo no encuentro ya qué hacer"\
-        "\nSé que piensas que no he sido sincero\nSé que piensas que ya no tengo remedio\n¿Pero quién me iba a decir que sin ti no sé vivir?"\
-        "\nY ahora que no estás aquí\nMe doy cuenta cuánta falta me haces\nSi te he fallado, te pido perdón\nDe la única forma que sé"\
-        "\nAbriendo las puertas de mi corazón\nPara cuando decidas volver.\n"
-
-"""
-mensaje = "Ahí va el Capitán Beto por el espacio\nCon su nave de fibra hecha en Haedo\nAyer colectivero\nHoy amo entre los amos del aire"\
-        "\nYa lleva 15 años en su periplo\nSu equipo es tan precario como su destino\nSin embargo, un anillo extraño\nAhuyenta sus peligros en el cosmos"\
-        "\nAhí va el Capitán Beto por el espacio\nLa foto de Carlitos sobre el comando\nY un banderín de River Plate\nY la triste estampita de un santo"\
-        "\n¿Dónde está el lugar al que todos llaman cielo?\nSi nadie viene hasta aquí a cebarme unos amargos, como en mi viejo umbral"\
-        "\n¿Por qué habré venido hasta aquí, si no puedo más de soledad?\nYa no puedo más de soledad\nSu anillo lo inmuniza en los peligros"\
-        "\nPero no lo protege de la tristeza\nSurcando la galaxia del Hombre\nAhí va el Capitán Beto, el errante\n¿Dónde habrá una ciudad en la que alguien silbe un tango?"\
-        "\n¿Dónde están, dónde están los camiones de basura, mi vieja y el café?\nSi esto sigue así como así, ni una triste sombra quedará"\
-        "\nNi una triste sombra quedará\nNi una triste sombra quedará\nAhí va el Capitán Beto por el espacio\nRegando los malvones de su cabina"\
-        "\nSin brújula y sin radio\nJamás podrá volver a la Tierra\nTardaron muchos años hasta encontrarlo\nEl anillo de Beto llevaba inscripto un signo del alma  ..."\
-        "\n\nAhí va el Capitán Beto por el espacio\nCon su nave de fibra hecha en Haedo\nAyer colectivero\nHoy amo entre los amos del aire"\
-        "\nYa lleva 15 años en su periplo\nSu equipo es tan precario como su destino\nSin embargo, un anillo extraño\nAhuyenta sus peligros en el cosmos"\
-        "\nAhí va el Capitán Beto por el espacio\nLa foto de Carlitos sobre el comando\nY un banderín de River Plate\nY la triste estampita de un santo"\
-        "\n¿Dónde está el lugar al que todos llaman cielo?\nSi nadie viene hasta aquí a cebarme unos amargos, como en mi viejo umbral"\
-        "\n¿Por qué habré venido hasta aquí, si no puedo más de soledad?\nYa no puedo más de soledad\nSu anillo lo inmuniza en los peligros"\
-        "\nPero no lo protege de la tristeza\nSurcando la galaxia del Hombre\nAhí va el Capitán Beto, el errante\n¿Dónde habrá una ciudad en la que alguien silbe un tango?"\
-        "\n¿Dónde están, dónde están los camiones de basura, mi vieja y el café?\nSi esto sigue así como así, ni una triste sombra quedará"\
-        "\nNi una triste sombra quedará\nNi una triste sombra quedará\nAhí va el Capitán Beto por el espacio\nRegando los malvones de su cabina"\
-        "\nSin brújula y sin radio\nJamás podrá volver a la Tierra\nTardaron muchos años hasta encontrarlo\nEl anillo de Beto llevaba inscripto un signo del alma  ..."\
-        "\n\nAhí va el Capitán Beto por el espacio\nCon su nave de fibra hecha en Haedo\nAyer colectivero\nHoy amo entre los amos del aire"\
-        "\nYa lleva 15 años en su periplo\nSu equipo es tan precario como su destino\nSin embargo, un anillo extraño\nAhuyenta sus peligros en el cosmos"\
-        "\nAhí va el Capitán Beto por el espacio\nLa foto de Carlitos sobre el comando\nY un banderín de River Plate\nY la triste estampita de un santo"\
-        "\n¿Dónde está el lugar al que todos llaman cielo?\nSi nadie viene hasta aquí a cebarme unos amargos, como en mi viejo umbral"\
-        "\n¿Por qué habré venido hasta aquí, si no puedo más de soledad?\nYa no puedo más de soledad\nSu anillo lo inmuniza en los peligros"\
-        "\nPero no lo protege de la tristeza\nSurcando la galaxia del Hombre\nAhí va el Capitán Beto, el errante\n¿Dónde habrá una ciudad en la que alguien silbe un tango?"\
-        "\n¿Dónde están, dónde están los camiones de basura, mi vieja y el café?\nSi esto sigue así como así, ni una triste sombra quedará"\
-        "\nNi una triste sombra quedará\nNi una triste sombra quedará\nAhí va el Capitán Beto por el espacio\nRegando los malvones de su cabina"\
-        "\nSin brújula y sin radio\nJamás podrá volver a la Tierra\nTardaron muchos años hasta encontrarlo\nEl anillo de Beto llevaba inscripto un signo del alma  ..."\
-        "\n\nAhí va el Capitán Beto por el espacio\nCon su nave de fibra hecha en Haedo\nAyer colectivero\nHoy amo entre los amos del aire"\
-        "\nYa lleva 15 años en su periplo\nSu equipo es tan precario como su destino\nSin embargo, un anillo extraño\nAhuyenta sus peligros en el cosmos"\
-        "\nAhí va el Capitán Beto por el espacio\nLa foto de Carlitos sobre el comando\nY un banderín de River Plate\nY la triste estampita de un santo"\
-        "\n¿Dónde está el lugar al que todos llaman cielo?\nSi nadie viene hasta aquí a cebarme unos amargos, como en mi viejo umbral"\
-        "\n¿Por qué habré venido hasta aquí, si no puedo más de soledad?\nYa no puedo más de soledad\nSu anillo lo inmuniza en los peligros"\
-        "\nPero no lo protege de la tristeza\nSurcando la galaxia del Hombre\nAhí va el Capitán Beto, el errante\n¿Dónde habrá una ciudad en la que alguien silbe un tango?"\
-        "\n¿Dónde están, dónde están los camiones de basura, mi vieja y el café?\nSi esto sigue así como así, ni una triste sombra quedará"\
-        "\nNi una triste sombra quedará\nNi una triste sombra quedará\nAhí va el Capitán Beto por el espacio\nRegando los malvones de su cabina"\
-        "\nSin brújula y sin radio\nJamás podrá volver a la Tierra\nTardaron muchos años hasta encontrarlo\nEl anillo de Beto llevaba inscripto un signo del alma"
-"""
 
 # Funcion que permite convertir una lista de bits a un String
 # Entrada:  bits      -> Lista de bits a convertir
@@ -78,9 +36,11 @@ def stringABits(s):
 
 def generarSubLlave(K, bloque):
     s = ""
-    for i in bloque:
+    i = 0
+    for b in bloque:
         s += str(bloque[i])
         s += str(K[i])
+        i +=1
  
     key = hexadecimalToBits(hashlib.sha1(s.encode('UTF-8')).hexdigest())
     return key[:(TAMANO_BLOQUE//2)]
@@ -100,7 +60,10 @@ def cifradorFeistel(textoPlanoBinario, F, K, des):
         if(des):
             subK = subkey[ronda]
         else:
-            subK = generarSubLlave(K, LE0)
+            if ronda > 0:
+                subK = generarSubLlave(subkey[ronda-1], RE0)
+            else:
+                subK = generarSubLlave(K, LE0)
             subkey.append(subK)
         
         resultadoF = F(RE0, subK)
@@ -144,15 +107,24 @@ def F(mitadBloque, llave):
     mitadBloque = mitadBloque[::-1]
     resultado = sumaBloques(mitadBloque, llave)
     
-    llave = XOR(llave, llave)
 
-    for i in range(0, len(resultado)):
-        if(resultado[i] == 0):
-            resultado[i] = 1
-        else:
-            resultado[i] = 0
+    s = ""
+    i = 0
+    for b in resultado:
+        s += str(resultado[i])
+        s += str(llave[i])
+        i +=1
+ 
+    key = hexadecimalToBits(hashlib.sha1(s.encode('UTF-8')).hexdigest())
+    key = key[:len(resultado)]
+
+    for i in range(0, len(resultado)-1):
+        e = key[i]+llave[i+1]
+        if e>1:
+            e = 1
+        resultado[i] = e
     
-    resultado = sumaBloques(resultado, llave)
+    #resultado = sumaBloques(resultado, llave)
     
     return resultado
 
@@ -166,7 +138,7 @@ def sumaBloques(bloque1, bloque2):
 
     return resultado
 
-def cifrarTexto(K):
+def cifrarTexto(mensaje, K):
     mensajeBits = stringABits(mensaje)
     cantidadBloques = int(len(mensajeBits)/TAMANO_BLOQUE)
 
@@ -180,6 +152,7 @@ def cifrarTexto(K):
     print("Cifrando Texto ...")
     i = 0
     bitsCifrados = []
+    inicio = time.time()
     for numeroBloque in range(0, int(cantidadBloques)):
         
         bloque = mensajeBits[i:(TAMANO_BLOQUE)+i]
@@ -188,20 +161,22 @@ def cifrarTexto(K):
         i += (TAMANO_BLOQUE)
     
     textoCifrado = bitsAString(bitsCifrados)
+    tiempo = time.time() - inicio
     print("Texto Cifrado: "+textoCifrado)
     #print("Bits Texto Cifrado: "+ str(bitsCifrados))
     print("\n\n")
     
-    return textoCifrado
+    return textoCifrado, tiempo
 
 
-def descifrarTexto(textoCifrado):
+def descifrarTexto(textoCifrado, K):
     global subkey 
     bitsCifrados = stringABits(textoCifrado)
     cantidadBloques = int(len(bitsCifrados)/TAMANO_BLOQUE)
     print("Descifrando Texto ...")
     i = 0
     bitsDescifrados = []
+    inicio = time.time()
     for numeroBloque in range(0, int(cantidadBloques)):
         bloque = bitsCifrados[i: (TAMANO_BLOQUE)+i]
         bloqueDescifrado = cifradorFeistel(bloque, F, K, True)
@@ -210,10 +185,11 @@ def descifrarTexto(textoCifrado):
         i += (TAMANO_BLOQUE)
     
     textoDescifrado = bitsAString(bitsDescifrados)
+    tiempo = time.time() - inicio
     print("Texto Descifrado: "+textoDescifrado)
     #print("Bits Texto Descifrado: "+ str(bitsDescifrados))
 
-    return textoDescifrado
+    return textoDescifrado, tiempo
 
 def generarLlave(keyword, tamañoLLave):
     h = hashlib.md5()
@@ -251,30 +227,124 @@ def efectoAvalancha(bitsCifrados1, bitsCifrados2):
         if(b1 != b2):
             contador += 1
 
-    return (contador/len(bitsCifrados1))*100
+    return (contador*100)/len(bitsCifrados1)
 
-if __name__ == "__main__":
+def leerArchivo(nombre):
+    f = open (nombre,'r', encoding="utf8")
+    texto = f.read()
+    return texto
+
+def testAvalancha():
+    mensaje = leerArchivo("Texto_Plano_1.txt")
+    global subkey
     mod = TAMANO_BLOQUE - (len(mensaje)%TAMANO_BLOQUE)
     for i in range(0, mod):
         mensaje += " "
     
-    keyword = "secreto"
+    keyword = "secret"
     K = generarLlave(keyword, int(TAMANO_BLOQUE))
-    print(K)
 
-    textoCifrado1 = cifrarTexto(K)
-    mensaje = "Ail y una historia me he inventado \nPara estar aquí, aquí a tu lado\nY no te das cuenta que\nYo no encuentro ya qué hacer"\
-        "\nSé que piensas que no he sido sincero\nSé que piensas que ya no tengo remedio\n¿Pero quién me iba a decir que sin ti no sé vivir?"\
-        "\nY ahora que no estás aquí\nMe doy cuenta cuánta falta me haces\nSi te he fallado, te pido perdón\nDe la única forma que sé"\
-        "\nAbriendo las puertas de mi corazón\nPara cuando decidas volver.\n"
-
-    textoCifrado2 = cifrarTexto(K)
+    #cifrar primer texto
+    textoCifrado1 = cifrarTexto(mensaje, K)
+    aux = revertirSubkeys(subkey)
+    subkey = aux
+    textoDescifrado = descifrarTexto(textoCifrado1, K)
+    
+    #Cifrar segundo texto
+    mensaje = leerArchivo("Texto_Plano_2.txt")
+    mod = TAMANO_BLOQUE - (len(mensaje)%TAMANO_BLOQUE)
+    for i in range(0, mod):
+        mensaje += " "
+    subkey = []
+    textoCifrado2 = cifrarTexto(mensaje, K)
+    aux = revertirSubkeys(subkey)
+    subkey = aux
+    textoDescifrado = descifrarTexto(textoCifrado2, K)
+    
+    #Efecto Avalancha
     avalancha = efectoAvalancha(stringABits(textoCifrado1), stringABits(textoCifrado2))
     print("Efecto avalancha: "+str(avalancha))
 
-    aux = revertirSubkeys(subkey)
-    subkey = aux
-    textoDescifrado = descifrarTexto(textoCifrado1)
+def testThroughput(nombreArchivo):
+    mensaje = leerArchivo(nombreArchivo)
+    global subkey
+    global TAMANO_BLOQUE
+    tamanos = [4,8,16,32,64,128]
+    tiemposEnc = []
+    throughputEnc = []
+    tiemposDes = []
+    throughputDes = []
+
+    for t in tamanos:
+        TAMANO_BLOQUE = t
+        mod = TAMANO_BLOQUE - (len(mensaje)%TAMANO_BLOQUE)
+        for i in range(0, mod):
+            mensaje += " "
+    
+        keyword = "secret"
+        K = generarLlave(keyword, int(TAMANO_BLOQUE))
+    
+        #cifrar 
+        textoCifrado1, tiempo = cifrarTexto(mensaje, K)
+        tiemposEnc.append(tiempo)
+        throughputEnc.append(TAMANO_BLOQUE/tiempo)
+        
+        #descifrar
+        aux = revertirSubkeys(subkey)
+        subkey = aux
+        textoDescifrado, tiempo = descifrarTexto(textoCifrado1, K)
+        tiemposDes.append(tiempo)
+        throughputDes.append(TAMANO_BLOQUE/tiempo)
+        subkey = []
+    
+    plt.figure()
+    nombre = "Tiempo de Cifrado de "+nombreArchivo[:len(nombreArchivo)-4]
+    plt.title(nombre)
+    plt.xlabel("Tamaño de bloque (bits)")
+    plt.ylabel("Tiempo (seg)")
+    plt.plot(tamanos, tiemposEnc, color='g')
+    plt.grid()
+    plt.savefig(nombre+".jpeg")
+
+    nombre = "Throughput de Cifrado de "+nombreArchivo[:len(nombreArchivo)-4]
+    plt.figure()
+    plt.xlabel("Tamaño de bloque (bits)")
+    plt.ylabel("Throughput (bits/seg)")
+    plt.title(nombre)
+    plt.plot(tamanos, throughputEnc, color='r')
+    plt.grid()
+    plt.savefig(nombre+".jpeg")
+
+    nombre = "Tiempo de Descifrado de "+nombreArchivo[:len(nombreArchivo)-4]
+    plt.figure()
+    plt.xlabel("Tamaño de bloque (bits)")
+    plt.ylabel("Tiempo (seg)")
+    plt.title(nombre)
+    plt.plot(tamanos, tiemposDes, color='b')
+    plt.grid()
+    plt.savefig(nombre+".jpeg")
+    
+    nombre = "Throughput de Descifrado de "+nombreArchivo[:len(nombreArchivo)-4]
+    plt.figure()
+    plt.xlabel("Tamaño de bloque (bits)")
+    plt.ylabel("Throughput (bits/seg)")
+    plt.title(nombre)
+    plt.plot(tamanos, throughputDes, color='orange')
+    plt.grid()
+    plt.savefig(nombre+".jpeg")
+    plt.show()
+
+    
+            
+
+if __name__ == "__main__":
+    testThroughput("Texto Pequeño.txt")
+    testThroughput("Texto Mediano.txt")
+    testThroughput("Texto Largo.txt")
+
+    
+    
+    
 
 
 
