@@ -1,14 +1,16 @@
 import hashlib
 import numpy 
 
-TAMANO_BLOQUE = 64
-RONDAS = 2
+TAMANO_BLOQUE = 4
+RONDAS = 8
 subkey = []
-"""
+#mensaje = "hola a todos"
+
 mensaje = "Mil y una historia me he inventado \nPara estar aquí, aquí a tu lado\nY no te das cuenta que\nYo no encuentro ya qué hacer"\
         "\nSé que piensas que no he sido sincero\nSé que piensas que ya no tengo remedio\n¿Pero quién me iba a decir que sin ti no sé vivir?"\
         "\nY ahora que no estás aquí\nMe doy cuenta cuánta falta me haces\nSi te he fallado, te pido perdón\nDe la única forma que sé"\
         "\nAbriendo las puertas de mi corazón\nPara cuando decidas volver.\n"
+
 """
 mensaje = "Ahí va el Capitán Beto por el espacio\nCon su nave de fibra hecha en Haedo\nAyer colectivero\nHoy amo entre los amos del aire"\
         "\nYa lleva 15 años en su periplo\nSu equipo es tan precario como su destino\nSin embargo, un anillo extraño\nAhuyenta sus peligros en el cosmos"\
@@ -18,9 +20,36 @@ mensaje = "Ahí va el Capitán Beto por el espacio\nCon su nave de fibra hecha e
         "\nPero no lo protege de la tristeza\nSurcando la galaxia del Hombre\nAhí va el Capitán Beto, el errante\n¿Dónde habrá una ciudad en la que alguien silbe un tango?"\
         "\n¿Dónde están, dónde están los camiones de basura, mi vieja y el café?\nSi esto sigue así como así, ni una triste sombra quedará"\
         "\nNi una triste sombra quedará\nNi una triste sombra quedará\nAhí va el Capitán Beto por el espacio\nRegando los malvones de su cabina"\
-        "\nSin brújula y sin radio\nJamás podrá volver a la Tierra\nTardaron muchos años hasta encontrarlo\nEl anillo de Beto llevaba inscripto un signo del alma  ..."
+        "\nSin brújula y sin radio\nJamás podrá volver a la Tierra\nTardaron muchos años hasta encontrarlo\nEl anillo de Beto llevaba inscripto un signo del alma  ..."\
+        "\n\nAhí va el Capitán Beto por el espacio\nCon su nave de fibra hecha en Haedo\nAyer colectivero\nHoy amo entre los amos del aire"\
+        "\nYa lleva 15 años en su periplo\nSu equipo es tan precario como su destino\nSin embargo, un anillo extraño\nAhuyenta sus peligros en el cosmos"\
+        "\nAhí va el Capitán Beto por el espacio\nLa foto de Carlitos sobre el comando\nY un banderín de River Plate\nY la triste estampita de un santo"\
+        "\n¿Dónde está el lugar al que todos llaman cielo?\nSi nadie viene hasta aquí a cebarme unos amargos, como en mi viejo umbral"\
+        "\n¿Por qué habré venido hasta aquí, si no puedo más de soledad?\nYa no puedo más de soledad\nSu anillo lo inmuniza en los peligros"\
+        "\nPero no lo protege de la tristeza\nSurcando la galaxia del Hombre\nAhí va el Capitán Beto, el errante\n¿Dónde habrá una ciudad en la que alguien silbe un tango?"\
+        "\n¿Dónde están, dónde están los camiones de basura, mi vieja y el café?\nSi esto sigue así como así, ni una triste sombra quedará"\
+        "\nNi una triste sombra quedará\nNi una triste sombra quedará\nAhí va el Capitán Beto por el espacio\nRegando los malvones de su cabina"\
+        "\nSin brújula y sin radio\nJamás podrá volver a la Tierra\nTardaron muchos años hasta encontrarlo\nEl anillo de Beto llevaba inscripto un signo del alma  ..."\
+        "\n\nAhí va el Capitán Beto por el espacio\nCon su nave de fibra hecha en Haedo\nAyer colectivero\nHoy amo entre los amos del aire"\
+        "\nYa lleva 15 años en su periplo\nSu equipo es tan precario como su destino\nSin embargo, un anillo extraño\nAhuyenta sus peligros en el cosmos"\
+        "\nAhí va el Capitán Beto por el espacio\nLa foto de Carlitos sobre el comando\nY un banderín de River Plate\nY la triste estampita de un santo"\
+        "\n¿Dónde está el lugar al que todos llaman cielo?\nSi nadie viene hasta aquí a cebarme unos amargos, como en mi viejo umbral"\
+        "\n¿Por qué habré venido hasta aquí, si no puedo más de soledad?\nYa no puedo más de soledad\nSu anillo lo inmuniza en los peligros"\
+        "\nPero no lo protege de la tristeza\nSurcando la galaxia del Hombre\nAhí va el Capitán Beto, el errante\n¿Dónde habrá una ciudad en la que alguien silbe un tango?"\
+        "\n¿Dónde están, dónde están los camiones de basura, mi vieja y el café?\nSi esto sigue así como así, ni una triste sombra quedará"\
+        "\nNi una triste sombra quedará\nNi una triste sombra quedará\nAhí va el Capitán Beto por el espacio\nRegando los malvones de su cabina"\
+        "\nSin brújula y sin radio\nJamás podrá volver a la Tierra\nTardaron muchos años hasta encontrarlo\nEl anillo de Beto llevaba inscripto un signo del alma  ..."\
+        "\n\nAhí va el Capitán Beto por el espacio\nCon su nave de fibra hecha en Haedo\nAyer colectivero\nHoy amo entre los amos del aire"\
+        "\nYa lleva 15 años en su periplo\nSu equipo es tan precario como su destino\nSin embargo, un anillo extraño\nAhuyenta sus peligros en el cosmos"\
+        "\nAhí va el Capitán Beto por el espacio\nLa foto de Carlitos sobre el comando\nY un banderín de River Plate\nY la triste estampita de un santo"\
+        "\n¿Dónde está el lugar al que todos llaman cielo?\nSi nadie viene hasta aquí a cebarme unos amargos, como en mi viejo umbral"\
+        "\n¿Por qué habré venido hasta aquí, si no puedo más de soledad?\nYa no puedo más de soledad\nSu anillo lo inmuniza en los peligros"\
+        "\nPero no lo protege de la tristeza\nSurcando la galaxia del Hombre\nAhí va el Capitán Beto, el errante\n¿Dónde habrá una ciudad en la que alguien silbe un tango?"\
+        "\n¿Dónde están, dónde están los camiones de basura, mi vieja y el café?\nSi esto sigue así como así, ni una triste sombra quedará"\
+        "\nNi una triste sombra quedará\nNi una triste sombra quedará\nAhí va el Capitán Beto por el espacio\nRegando los malvones de su cabina"\
+        "\nSin brújula y sin radio\nJamás podrá volver a la Tierra\nTardaron muchos años hasta encontrarlo\nEl anillo de Beto llevaba inscripto un signo del alma"
+"""
 
-#mensaje = "mensaje largo de prueba."
 # Funcion que permite convertir una lista de bits a un String
 # Entrada:  bits      -> Lista de bits a convertir
 # 
@@ -109,14 +138,32 @@ def XOR(bloque1, bloque2):
 #           llave     -> Lista de bits que representan la llave
 # 
 # Salida:   resultado -> Lista de bits que representan el resultado de la función F
-def F(bloque, llave):
+def F(mitadBloque, llave):
     resultado = []
-    for i in range(0, len(llave)):
-        if(i%2 == 0):
-            resultado.append(llave[i])
-        else:
-            resultado.append(bloque[i])
+
+    mitadBloque = mitadBloque[::-1]
+    resultado = sumaBloques(mitadBloque, llave)
     
+    llave = XOR(llave, llave)
+
+    for i in range(0, len(resultado)):
+        if(resultado[i] == 0):
+            resultado[i] = 1
+        else:
+            resultado[i] = 0
+    
+    resultado = sumaBloques(resultado, llave)
+    
+    return resultado
+
+def sumaBloques(bloque1, bloque2):
+    resultado = []
+    for e1,e2 in zip(bloque1, bloque2):
+        e = e1+e2
+        if(e > 1):
+            e = 0
+        resultado.append(e) 
+
     return resultado
 
 def cifrarTexto(K):
@@ -175,8 +222,12 @@ def generarLlave(keyword, tamañoLLave):
     num_of_bits = 8
     key = []
     aux = list(bin(int(h.hexdigest(), scale))[2:].zfill(num_of_bits))
+    j = 0
     for i in range(0,tamañoLLave):
-        key.append( int( aux[i] ) )
+        if (j == len(aux)):
+            j = 0
+        key.append( int( aux[j] ) )
+        j +=1
     return key
 
 def hexadecimalToBits(stringHex):
@@ -194,22 +245,38 @@ def revertirSubkeys(keys):
         i += RONDAS
     return skaux
 
+def efectoAvalancha(bitsCifrados1, bitsCifrados2):
+    contador = 0
+    for b1, b2 in zip(bitsCifrados1, bitsCifrados2):
+        if(b1 != b2):
+            contador += 1
+
+    return (contador/len(bitsCifrados1))*100
+
 if __name__ == "__main__":
-
-    #h1 = hashlib.sha1(('0001'+'1101').encode('UTF-8'))
-    #h2 = hashlib.sha1('0001'.encode('UTF-8'))
-    #print(h1.hexdigest())
-    #hexadecimalToBits(h2.hexdigest())
-    #print(h2.hexdigest())
-
-    keyword = "secret"
+    mod = TAMANO_BLOQUE - (len(mensaje)%TAMANO_BLOQUE)
+    for i in range(0, mod):
+        mensaje += " "
+    
+    keyword = "secreto"
     K = generarLlave(keyword, int(TAMANO_BLOQUE))
     print(K)
 
-    textoCifrado = cifrarTexto(K)
+    textoCifrado1 = cifrarTexto(K)
+    mensaje = "Ail y una historia me he inventado \nPara estar aquí, aquí a tu lado\nY no te das cuenta que\nYo no encuentro ya qué hacer"\
+        "\nSé que piensas que no he sido sincero\nSé que piensas que ya no tengo remedio\n¿Pero quién me iba a decir que sin ti no sé vivir?"\
+        "\nY ahora que no estás aquí\nMe doy cuenta cuánta falta me haces\nSi te he fallado, te pido perdón\nDe la única forma que sé"\
+        "\nAbriendo las puertas de mi corazón\nPara cuando decidas volver.\n"
+
+    textoCifrado2 = cifrarTexto(K)
+    avalancha = efectoAvalancha(stringABits(textoCifrado1), stringABits(textoCifrado2))
+    print("Efecto avalancha: "+str(avalancha))
+
     aux = revertirSubkeys(subkey)
     subkey = aux
-    textoDescifrado = descifrarTexto(textoCifrado)
+    textoDescifrado = descifrarTexto(textoCifrado1)
+
+
 
 
 
