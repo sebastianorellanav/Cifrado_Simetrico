@@ -1,15 +1,26 @@
 import hashlib
 import numpy 
 
-TAMANO_BLOQUE = 8
-RONDAS = 1
-#K = [0,0,1,0]
-
+TAMANO_BLOQUE = 64
+RONDAS = 2
+subkey = []
+"""
 mensaje = "Mil y una historia me he inventado \nPara estar aquí, aquí a tu lado\nY no te das cuenta que\nYo no encuentro ya qué hacer"\
         "\nSé que piensas que no he sido sincero\nSé que piensas que ya no tengo remedio\n¿Pero quién me iba a decir que sin ti no sé vivir?"\
         "\nY ahora que no estás aquí\nMe doy cuenta cuánta falta me haces\nSi te he fallado, te pido perdón\nDe la única forma que sé"\
-        "\nAbriendo las puertas de mi corazón\nPara cuando decidas volver\n"
+        "\nAbriendo las puertas de mi corazón\nPara cuando decidas volver.\n"
+"""
+mensaje = "Ahí va el Capitán Beto por el espacio\nCon su nave de fibra hecha en Haedo\nAyer colectivero\nHoy amo entre los amos del aire"\
+        "\nYa lleva 15 años en su periplo\nSu equipo es tan precario como su destino\nSin embargo, un anillo extraño\nAhuyenta sus peligros en el cosmos"\
+        "\nAhí va el Capitán Beto por el espacio\nLa foto de Carlitos sobre el comando\nY un banderín de River Plate\nY la triste estampita de un santo"\
+        "\n¿Dónde está el lugar al que todos llaman cielo?\nSi nadie viene hasta aquí a cebarme unos amargos, como en mi viejo umbral"\
+        "\n¿Por qué habré venido hasta aquí, si no puedo más de soledad?\nYa no puedo más de soledad\nSu anillo lo inmuniza en los peligros"\
+        "\nPero no lo protege de la tristeza\nSurcando la galaxia del Hombre\nAhí va el Capitán Beto, el errante\n¿Dónde habrá una ciudad en la que alguien silbe un tango?"\
+        "\n¿Dónde están, dónde están los camiones de basura, mi vieja y el café?\nSi esto sigue así como así, ni una triste sombra quedará"\
+        "\nNi una triste sombra quedará\nNi una triste sombra quedará\nAhí va el Capitán Beto por el espacio\nRegando los malvones de su cabina"\
+        "\nSin brújula y sin radio\nJamás podrá volver a la Tierra\nTardaron muchos años hasta encontrarlo\nEl anillo de Beto llevaba inscripto un signo del alma  ..."
 
+#mensaje = "mensaje largo de prueba."
 # Funcion que permite convertir una lista de bits a un String
 # Entrada:  bits      -> Lista de bits a convertir
 # 
@@ -36,8 +47,15 @@ def stringABits(s):
     return resultado
 
 
-def generarSubLlave(K, numeroRonda):
-    pass
+def generarSubLlave(K, bloque):
+    s = ""
+    for i in bloque:
+        s += str(bloque[i])
+        s += str(K[i])
+ 
+    key = hexadecimalToBits(hashlib.sha1(s.encode('UTF-8')).hexdigest())
+    return key[:(TAMANO_BLOQUE//2)]
+
 
 # Funcion que implementa un cifrador Fesitel
 # Entrada:  textoPanoBinario -> Lista de bits que representan el texto a cifrar
@@ -45,12 +63,17 @@ def generarSubLlave(K, numeroRonda):
 #           K1               -> Llave de prueba para la ronda 1 del algoritmo
 # 
 # Salida:   binarioCifrado   -> Lista de bits que representan el texto cifrado 
-def cifradorFeistel(textoPlanoBinario, F, K):
+def cifradorFeistel(textoPlanoBinario, F, K, des):
     LE0 = textoPlanoBinario[0:int(TAMANO_BLOQUE/2)]
     RE0 = textoPlanoBinario[int(TAMANO_BLOQUE/2): ]
 
     for ronda in range(0, RONDAS):
-        subK = generarSubLlave(K, ronda)
+        if(des):
+            subK = subkey[ronda]
+        else:
+            subK = generarSubLlave(K, LE0)
+            subkey.append(subK)
+        
         resultadoF = F(RE0, subK)
         RE1 = XOR(LE0, resultadoF)
 
@@ -101,7 +124,7 @@ def cifrarTexto(K):
     cantidadBloques = int(len(mensajeBits)/TAMANO_BLOQUE)
 
     print("Texto Original: "+mensaje)
-    print("Bits Texto Original: "+str(mensajeBits))
+    #print("Bits Texto Original: "+str(mensajeBits))
     print("\n\n")
 
     ######################################################
@@ -113,51 +136,80 @@ def cifrarTexto(K):
     for numeroBloque in range(0, int(cantidadBloques)):
         
         bloque = mensajeBits[i:(TAMANO_BLOQUE)+i]
-        bloqueCifrado = cifradorFeistel(bloque, F, K)
+        bloqueCifrado = cifradorFeistel(bloque, F, K, False)
         bitsCifrados += bloqueCifrado
         i += (TAMANO_BLOQUE)
     
     textoCifrado = bitsAString(bitsCifrados)
     print("Texto Cifrado: "+textoCifrado)
-    print("Bits Texto Cifrado: "+ str(bitsCifrados))
+    #print("Bits Texto Cifrado: "+ str(bitsCifrados))
     print("\n\n")
     
     return textoCifrado
 
 
 def descifrarTexto(textoCifrado):
+    global subkey 
     bitsCifrados = stringABits(textoCifrado)
     cantidadBloques = int(len(bitsCifrados)/TAMANO_BLOQUE)
-
     print("Descifrando Texto ...")
     i = 0
     bitsDescifrados = []
     for numeroBloque in range(0, int(cantidadBloques)):
         bloque = bitsCifrados[i: (TAMANO_BLOQUE)+i]
-        bloqueDescifrado = cifradorFeistel(bloque, F, K)
+        bloqueDescifrado = cifradorFeistel(bloque, F, K, True)
         bitsDescifrados += bloqueDescifrado
+        subkey = subkey[RONDAS:]
         i += (TAMANO_BLOQUE)
     
     textoDescifrado = bitsAString(bitsDescifrados)
     print("Texto Descifrado: "+textoDescifrado)
-    print("Bits Texto Descifrado: "+ str(bitsDescifrados))
+    #print("Bits Texto Descifrado: "+ str(bitsDescifrados))
 
     return textoDescifrado
 
-def generarLlave(tamañoLLave):
-    return numpy.random.randint(2, size=tamañoLLave)
-
-if __name__ == "__main__":
+def generarLlave(keyword, tamañoLLave):
     h = hashlib.md5()
-    h.update("lorem".encode('UTF-8'))
-    print (h.hexdigest())
+    h.update(keyword.encode('UTF-8'))
     scale = 16 ## equals to hexadecimal
     num_of_bits = 8
-    print(list(bin(int(h.hexdigest(), scale))[2:].zfill(num_of_bits)))
+    key = []
+    aux = list(bin(int(h.hexdigest(), scale))[2:].zfill(num_of_bits))
+    for i in range(0,tamañoLLave):
+        key.append( int( aux[i] ) )
+    return key
 
-    K = generarLlave(int(TAMANO_BLOQUE))
-    #textoCifrado = cifrarTexto(K)
-    #textoDescifrado = descifrarTexto(textoCifrado)
+def hexadecimalToBits(stringHex):
+    res = "{0:08b}".format(int(stringHex, 16)) 
+    res = [int(b) for b in list(res)]
+    return res
+
+def revertirSubkeys(keys):
+    skaux = []
+    i = 0
+    for v in range(0, len(keys)//RONDAS):
+        aux = keys[i: i+RONDAS]
+        aux = aux[::-1]
+        skaux.extend(aux)
+        i += RONDAS
+    return skaux
+
+if __name__ == "__main__":
+
+    #h1 = hashlib.sha1(('0001'+'1101').encode('UTF-8'))
+    #h2 = hashlib.sha1('0001'.encode('UTF-8'))
+    #print(h1.hexdigest())
+    #hexadecimalToBits(h2.hexdigest())
+    #print(h2.hexdigest())
+
+    keyword = "secret"
+    K = generarLlave(keyword, int(TAMANO_BLOQUE))
+    print(K)
+
+    textoCifrado = cifrarTexto(K)
+    aux = revertirSubkeys(subkey)
+    subkey = aux
+    textoDescifrado = descifrarTexto(textoCifrado)
 
 
 
