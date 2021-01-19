@@ -53,6 +53,7 @@ def generarSubLlave(K, bloque):
 # 
 # Salida:   binarioCifrado   -> Lista de bits que representan el texto cifrado 
 def cifradorFeistel(textoPlanoBinario, F, K, des):
+    global subkey
     LE0 = textoPlanoBinario[0:int(TAMANO_BLOQUE/2)]
     RE0 = textoPlanoBinario[int(TAMANO_BLOQUE/2): ]
 
@@ -245,10 +246,10 @@ def testAvalancha():
     K = generarLlave(keyword, int(TAMANO_BLOQUE))
 
     #cifrar primer texto
-    textoCifrado1 = cifrarTexto(mensaje, K)
+    textoCifrado1, tiempo = cifrarTexto(mensaje, K)
     aux = revertirSubkeys(subkey)
     subkey = aux
-    textoDescifrado = descifrarTexto(textoCifrado1, K)
+    textoDescifrado, tiempo = descifrarTexto(textoCifrado1, K)
     
     #Cifrar segundo texto
     mensaje = leerArchivo("Texto_Plano_2.txt")
@@ -256,11 +257,13 @@ def testAvalancha():
     for i in range(0, mod):
         mensaje += " "
     subkey = []
-    textoCifrado2 = cifrarTexto(mensaje, K)
+    textoCifrado2, tiempo = cifrarTexto(mensaje, K)
     aux = revertirSubkeys(subkey)
     subkey = aux
-    textoDescifrado = descifrarTexto(textoCifrado2, K)
+    textoDescifrado, tiempo = descifrarTexto(textoCifrado2, K)
     
+    subkey = []
+
     #Efecto Avalancha
     avalancha = efectoAvalancha(stringABits(textoCifrado1), stringABits(textoCifrado2))
     print("Efecto avalancha: "+str(avalancha))
@@ -338,9 +341,11 @@ def testThroughput(nombreArchivo):
             
 
 if __name__ == "__main__":
-    testThroughput("Texto Pequeño.txt")
-    testThroughput("Texto Mediano.txt")
-    testThroughput("Texto Largo.txt")
+    testAvalancha()
+
+    #testThroughput("Texto Pequeño.txt")
+    #testThroughput("Texto Mediano.txt")
+    #testThroughput("Texto Largo.txt")
 
     
     
