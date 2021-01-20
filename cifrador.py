@@ -299,10 +299,10 @@ def testThroughput(nombreArchivo):
             
 
 if __name__ == "__main__":
-    print("Bienvenide, ¿Que test desea correr?\n\n")
+    print("Bienvenide, ¿Que test desea correr?\n")
 
     print("1. Test Efecto Avalancha")
-    print("2. Test Throughput ")
+    print("2. Test Throughput \n")
 
     
     op=0
