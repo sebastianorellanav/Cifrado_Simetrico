@@ -23,6 +23,10 @@ def stringABits(s):
     
     return resultado
 
+# Funcion que permite convertir a Bits un Hexadecimal
+# Entrada:  stringHex  -> String a convertir
+# 
+# Salida:   resultado -> Lista de bits que representan el Hexadecimal
 def hexadecimalToBits(stringHex):
     res = "{0:08b}".format(int(stringHex, 16)) 
     res = [int(b) for b in list(res)]
