@@ -3,7 +3,12 @@ from cifrador import TAMANO_BLOQUE, RONDAS
 import conversion
 
 
-
+# Función que genera una llave inicial con un largo
+# definido a partir de un string
+# Entrada:  keyword     ->  String a convertir
+#           tamañoLlave -> Tamaño de la lista de bits    
+#
+# Salida:   key         -> Lista bits que representa la llave creada
 def generarLlave(keyword, tamañoLLave):
     h = hashlib.md5()
     h.update(keyword.encode('UTF-8'))
@@ -19,7 +24,11 @@ def generarLlave(keyword, tamañoLLave):
         j +=1
     return key
 
-
+# Función revierte las subllaves para poder descifrar.
+# definido a partir de un string
+# Entrada:  keys        ->  Lista de bits representativa a la llave   
+#
+# Salida:   key         -> Lista de llaves auxiliares
 def revertirSubkeys(keys):
     skaux = []
     i = 0
