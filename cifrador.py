@@ -4,21 +4,11 @@ import time
 import matplotlib.pyplot as plt
 import conversion
 import archivo
+import keys 
 
 TAMANO_BLOQUE = 8
 RONDAS = 7
 subkey = []
-
-def generarSubLlave(K, bloque):
-    s = ""
-    i = 0
-    for b in bloque:
-        s += str(bloque[i])
-        s += str(K[i])
-        i +=1
- 
-    key = conversion.hexadecimalToBits(hashlib.sha1(s.encode('UTF-8')).hexdigest())
-    return key[:(TAMANO_BLOQUE//2)]
 
 
 # Funcion que implementa un cifrador Fesitel
@@ -104,6 +94,17 @@ def F(mitadBloque, llave):
     
     return resultado
 
+def generarSubLlave(K, bloque):
+    s = ""
+    i = 0
+    for b in bloque:
+        s += str(bloque[i])
+        s += str(K[i])
+        i +=1
+ 
+    key = conversion.hexadecimalToBits(hashlib.sha1(s.encode('UTF-8')).hexdigest())
+    return key[:(TAMANO_BLOQUE//2)]
+
 def sumaBloques(bloque1, bloque2):
     resultado = []
     for e1,e2 in zip(bloque1, bloque2):
@@ -167,31 +168,7 @@ def descifrarTexto(textoCifrado, K):
 
     return textoDescifrado, tiempo
 
-def generarLlave(keyword, tamañoLLave):
-    h = hashlib.md5()
-    h.update(keyword.encode('UTF-8'))
-    scale = 16 ## equals to hexadecimal
-    num_of_bits = 8
-    key = []
-    aux = list(bin(int(h.hexdigest(), scale))[2:].zfill(num_of_bits))
-    j = 0
-    for i in range(0,tamañoLLave):
-        if (j == len(aux)):
-            j = 0
-        key.append( int( aux[j] ) )
-        j +=1
-    return key
 
-
-def revertirSubkeys(keys):
-    skaux = []
-    i = 0
-    for v in range(0, len(keys)//RONDAS):
-        aux = keys[i: i+RONDAS]
-        aux = aux[::-1]
-        skaux.extend(aux)
-        i += RONDAS
-    return skaux
 
 def efectoAvalancha(bitsCifrados1, bitsCifrados2):
     contador = 0
@@ -211,14 +188,14 @@ def testAvalancha():
         mensaje += " "
     
     keyword = "secret"
-    K = generarLlave(keyword, int(TAMANO_BLOQUE))
+    K = keys.generarLlave(keyword, int(TAMANO_BLOQUE))
 
     #cifrar primer texto
     textoCifrado1, tiempo = cifrarTexto(mensaje, K)
-    aux = revertirSubkeys(subkey)
+    aux = keys.revertirSubkeys(subkey)
     subkey = aux
     textoDescifrado, tiempo = descifrarTexto(textoCifrado1, K)
-    
+    print("\n\n")
     #Cifrar segundo texto
     mensaje = archivo.leerArchivo("Texto_Plano_2.txt")
     mod = TAMANO_BLOQUE - (len(mensaje)%TAMANO_BLOQUE)
@@ -226,15 +203,18 @@ def testAvalancha():
         mensaje += " "
     subkey = []
     textoCifrado2, tiempo = cifrarTexto(mensaje, K)
-    aux = revertirSubkeys(subkey)
+    aux = keys.revertirSubkeys(subkey)
     subkey = aux
     textoDescifrado, tiempo = descifrarTexto(textoCifrado2, K)
     
     subkey = []
 
     #Efecto Avalancha
-    avalancha = efectoAvalancha(conversion.stringABits(textoCifrado1), conversion.stringABits(textoCifrado2))
-    print("Efecto avalancha: "+str(avalancha))
+    avalanchabits = efectoAvalancha(conversion.stringABits(textoCifrado1), conversion.stringABits(textoCifrado2))
+    avalanchatexto = efectoAvalancha(textoCifrado1, textoCifrado2)
+    print("\n\n==========================================================\nResultado del Test: \n")
+    print("Efecto avalancha (% bits diferentes): "+str(avalanchabits))
+    print("Efecto avalancha (% caracteres diferentes): "+str(avalanchatexto))
 
 def testThroughput(nombreArchivo):
     mensaje = archivo.leerArchivo(nombreArchivo)
@@ -248,25 +228,32 @@ def testThroughput(nombreArchivo):
 
     for t in tamanos:
         TAMANO_BLOQUE = t
+        print("\n\n==================================================")
+        print("TAMAÑO DE BLOQUE = "+str(t))
+        print("\n")
         mod = TAMANO_BLOQUE - (len(mensaje)%TAMANO_BLOQUE)
         for i in range(0, mod):
             mensaje += " "
     
         keyword = "secret"
-        K = generarLlave(keyword, int(TAMANO_BLOQUE))
+        K = keys.generarLlave(keyword, int(TAMANO_BLOQUE))
     
         #cifrar 
         textoCifrado1, tiempo = cifrarTexto(mensaje, K)
         tiemposEnc.append(tiempo)
         throughputEnc.append(TAMANO_BLOQUE/tiempo)
-        
+        print("\nThroughput Cifrado= "+str(TAMANO_BLOQUE/tiempo))
+        print("\n")
+
         #descifrar
-        aux = revertirSubkeys(subkey)
+        aux = keys.revertirSubkeys(subkey)
         subkey = aux
         textoDescifrado, tiempo = descifrarTexto(textoCifrado1, K)
         tiemposDes.append(tiempo)
         throughputDes.append(TAMANO_BLOQUE/tiempo)
         subkey = []
+        print("\nThroughput Descifrado= "+str(TAMANO_BLOQUE/tiempo))
+        
     
     plt.figure()
     nombre = "Tiempo de Cifrado de "+nombreArchivo[:len(nombreArchivo)-4]
@@ -305,12 +292,42 @@ def testThroughput(nombreArchivo):
     plt.savefig(nombre+".jpeg")
     plt.show()
 
-    
+
             
 
 if __name__ == "__main__":
-    testAvalancha()
+    
+    print("Bienvenide, ¿Que test desea correr?\n\n")
 
-    testThroughput("Texto Pequeño.txt")
-    #testThroughput("Texto Mediano.txt")
-    #testThroughput("Texto Largo.txt")
+    print("1. Test Efecto Avalancha")
+    print("2. Test Throughput (Texto Pequeño)")
+    print("3. Test Throughput (Texto Mediano)")
+    print("4. Test Throughput (Texto Largo)\n")
+    
+    op=0
+    
+    try:
+        op = int(input("Ingrese el numero del test: "))
+    except Exception as e:
+        while(op!=1 and op!=2 and op!=3 and op!=4):
+            try:
+                print("Opción inválida")
+                op = int(input("Ingrese el numero del test nuevamente: "))
+            except Exception as identifier:
+                pass
+    
+    if(op==1):
+        testAvalancha()
+    
+    elif(op==2):
+        testThroughput("Texto Pequeño.txt")
+
+    elif(op==3):
+        testThroughput("Texto Mediano.txt")
+    
+    elif(op==4):
+        testThroughput("Texto Largo.txt")
+    
+    else:
+        print("Tuviste tu oportunidad y la desaprovechaste, adiós.")
+
