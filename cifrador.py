@@ -1,20 +1,20 @@
 import hashlib
 import numpy 
 import time
-import matplotlib.pyplot as plt
+import graficar
 import conversion
 import archivo
 import keys 
 
-TAMANO_BLOQUE = 8
+TAMANO_BLOQUE = 128
 RONDAS = 7
 subkey = []
-
 
 # Funcion que implementa un cifrador Fesitel
 # Entrada:  textoPanoBinario -> Lista de bits que representan el texto a cifrar
 #           F                -> Función F de prueba que se utiliza en el algoritmo de cifrado
 #           K1               -> Llave de prueba para la ronda 1 del algoritmo
+#           des              -> Booleano que indica si se va a cifrar o descifrar   
 # 
 # Salida:   binarioCifrado   -> Lista de bits que representan el texto cifrado 
 def cifradorFeistel(textoPlanoBinario, F, K, des):
@@ -254,62 +254,22 @@ def testThroughput(nombreArchivo):
         subkey = []
         print("\nThroughput Descifrado= "+str(TAMANO_BLOQUE/tiempo))
         
-    
-    plt.figure()
-    nombre = "Tiempo de Cifrado de "+nombreArchivo[:len(nombreArchivo)-4]
-    plt.title(nombre)
-    plt.xlabel("Tamaño de bloque (bits)")
-    plt.ylabel("Tiempo (seg)")
-    plt.plot(tamanos, tiemposEnc, color='g')
-    plt.grid()
-    plt.savefig(nombre+".jpeg")
-
-    nombre = "Throughput de Cifrado de "+nombreArchivo[:len(nombreArchivo)-4]
-    plt.figure()
-    plt.xlabel("Tamaño de bloque (bits)")
-    plt.ylabel("Throughput (bits/seg)")
-    plt.title(nombre)
-    plt.plot(tamanos, throughputEnc, color='r')
-    plt.grid()
-    plt.savefig(nombre+".jpeg")
-
-    nombre = "Tiempo de Descifrado de "+nombreArchivo[:len(nombreArchivo)-4]
-    plt.figure()
-    plt.xlabel("Tamaño de bloque (bits)")
-    plt.ylabel("Tiempo (seg)")
-    plt.title(nombre)
-    plt.plot(tamanos, tiemposDes, color='b')
-    plt.grid()
-    plt.savefig(nombre+".jpeg")
-    
-    nombre = "Throughput de Descifrado de "+nombreArchivo[:len(nombreArchivo)-4]
-    plt.figure()
-    plt.xlabel("Tamaño de bloque (bits)")
-    plt.ylabel("Throughput (bits/seg)")
-    plt.title(nombre)
-    plt.plot(tamanos, throughputDes, color='orange')
-    plt.grid()
-    plt.savefig(nombre+".jpeg")
-    plt.show()
-
-
+    return tiemposEnc, tiemposDes
             
 
 if __name__ == "__main__":
-    
     print("Bienvenide, ¿Que test desea correr?\n\n")
 
     print("1. Test Efecto Avalancha")
-    print("2. Test Throughput (Texto Pequeño)")
-    print("3. Test Throughput (Texto Mediano)")
-    print("4. Test Throughput (Texto Largo)\n")
+    print("2. Test Throughput ")
+
     
     op=0
     
     try:
         op = int(input("Ingrese el numero del test: "))
     except Exception as e:
-        while(op!=1 and op!=2 and op!=3 and op!=4):
+        while(op!=1 and op!=2 ):
             try:
                 print("Opción inválida")
                 op = int(input("Ingrese el numero del test nuevamente: "))
@@ -320,13 +280,14 @@ if __name__ == "__main__":
         testAvalancha()
     
     elif(op==2):
-        testThroughput("Texto Pequeño.txt")
+        tamanos = [4,8,16,32,64,128]
+        tiempoEncPequeño, tiempoDesPequeño = testThroughput("Texto Corto.txt")
+        tiempoEncMediano, tiempoDesMediano = testThroughput("Texto Mediano.txt")
+        tiempoEncLargo, tiempoDesLargo = testThroughput("Texto Largo.txt")
 
-    elif(op==3):
-        testThroughput("Texto Mediano.txt")
-    
-    elif(op==4):
-        testThroughput("Texto Largo.txt")
+        graficar.graficarResultados(tamanos, tiempoEncPequeño, tiempoEncMediano, tiempoEncLargo, tiempoDesPequeño, tiempoDesMediano, tiempoDesLargo)
+
+        graficar.mostrarResultados()
     
     else:
         print("Tuviste tu oportunidad y la desaprovechaste, adiós.")
